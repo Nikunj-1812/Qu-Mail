@@ -88,11 +88,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <style dangerouslySetInnerHTML={{ __html: CRITICAL_CSS }} />
       </head>
-      <body>
+      <body suppressHydrationWarning>
         <ToastProvider>
           <AuthProvider>
             <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>

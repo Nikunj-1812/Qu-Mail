@@ -1,5 +1,7 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import React from 'react';
 import { DraftsList } from '@/components/mail/DraftsList';
 import { UserProfileCard } from '@/components/layout/UserProfileCard';

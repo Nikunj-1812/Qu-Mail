@@ -89,7 +89,8 @@ python manage.py seed_demo
 ```bash
 cd backend
 source venv/bin/activate
-python manage.py runserver 127.0.0.1:8000
+
+ 127.0.0.1:8000
 ```
 Backend API will be live at `http://127.0.0.1:8000`.
 
