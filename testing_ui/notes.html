@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuMail Notes — How QuMail Works</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- GSAP Animation Library & ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body { padding: 1.5rem 2rem; max-width: 1440px; margin: 0 auto; }
+    .standalone-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="standalone-header">
+    <div class="brand-title">
+      <h1>QuMail Interactive Cryptography Notes</h1>
+      <p>Educational Breakdown — Kyber-1024 KEM + AES-256-GCM + Dilithium + OTP</p>
+    </div>
+    <a href="index.html" class="btn btn-secondary" style="width: auto; text-decoration: none;">← Back to QuMail Main App</a>
+  </header>
+
+  <!-- Mode & Control Topbar -->
+  <div class="notes-topbar">
+    <div class="mode-toggle-group">
+      <span class="mode-label">Learning Mode:</span>
+      <button class="btn-mode active" id="btn-mode-beginner" onclick="setLearningMode('beginner')">🌱 Beginner Mode</button>
+      <button class="btn-mode" id="btn-mode-advanced" onclick="setLearningMode('advanced')">⚡ Advanced Mode</button>
+    </div>
+    <div style="font-size: 0.85rem; color: var(--text-muted);">
+      Interactive Cryptography Lab & Technical Guide
+    </div>
+  </div>
+
+  <div class="notes-container">
+    
+    <!-- Sticky Navigation Sidebar -->
+    <nav class="notes-sidebar">
+      <div class="sidebar-header">CONTENTS</div>
+      <a href="#sec-hero" class="sidebar-link active">1. Hero Journey</a>
+      <a href="#sec-problem" class="sidebar-link">2. Plaintext Problem</a>
+      <a href="#sec-levels" class="sidebar-link">3. 3-Level Overview</a>
+      <a href="#sec-level1" class="sidebar-link">4. Level 1 Transmission</a>
+      <a href="#sec-why-level2" class="sidebar-link">5. Why Level 2 Exists</a>
+      <a href="#sec-aes" class="sidebar-link">6. AES-256-GCM Lock</a>
+      <a href="#sec-kyber" class="sidebar-link">7. Kyber KEM Path</a>
+      <a href="#sec-kyber-visualizer" class="sidebar-link">8. Kyber Visualizer</a>
+      <a href="#sec-level2-flow" class="sidebar-link">9. Level 2 Flow</a>
+      <a href="#sec-nonce" class="sidebar-link">10. What is a Nonce?</a>
+      <a href="#sec-authtag" class="sidebar-link">11. Auth Tag & Tampering</a>
+      <a href="#sec-dilithium" class="sidebar-link">12. Dilithium Signatures</a>
+      <a href="#sec-otp" class="sidebar-link">13. Level 3 OTP & XOR</a>
+      <a href="#sec-matrix" class="sidebar-link">14. Side-by-Side Matrix</a>
+      <a href="#sec-network-demo" class="sidebar-link">15. Attacker View Demo</a>
+      <a href="#sec-anatomy" class="sidebar-link">16. Packet Anatomy</a>
+      <a href="#sec-glossary" class="sidebar-link">17. QuMail Dictionary</a>
+      <a href="#sec-secrets" class="sidebar-link">18. Secret vs Public</a>
+      <a href="#sec-highway" class="sidebar-link">19. Network Highway</a>
+      <a href="#sec-story" class="sidebar-link">20. Story Mode Player</a>
+      <a href="#sec-real-vs-sim" class="sidebar-link">21. Real vs Simulated</a>
+      <a href="#sec-under-hood" class="sidebar-link">22. Under The Hood</a>
+      <a href="#sec-quiz" class="sidebar-link">23. Knowledge Quiz</a>
+    </nav>
+
+    <!-- Main Notes Educational Content -->
+    <div class="notes-content">
+
+      <!-- SECTION 1 — HERO -->
+      <section id="sec-hero" class="notes-section">
+        <div class="hero-card">
+          <span class="badge badge-level-2" style="margin-bottom: 0.75rem;">Interactive Cryptography Lab</span>
+          <h1 class="hero-title">How QuMail Protects a Message</h1>
+          <p class="hero-subtitle">
+            Follow one email from <strong>Alice</strong> to <strong>Bob</strong> and observe what happens to keys, payloads, signatures, and ciphertexts at every security level.
+          </p>
+
+          <!-- Mini Animated Flow Diagram -->
+          <div class="flow-container" id="hero-flow-diagram">
+            <div class="flow-node node-alice">
+              <div class="node-icon">👩‍💻</div>
+              <div class="node-label">Alice</div>
+              <div class="node-sub">Sender</div>
+            </div>
+            <div class="flow-arrow">
+              <div class="animated-packet-dot" id="dot-hero-1"></div>
+              <span>Encryption</span>
+              <div class="arrow-line"></div>
+            </div>
+            <div class="flow-node node-network">
+              <div class="node-icon">🌐</div>
+              <div class="node-label">Network / Wire</div>
+              <div class="node-sub">👁 Attacker Inspecting</div>
+            </div>
+            <div class="flow-arrow">
+              <div class="animated-packet-dot" id="dot-hero-2"></div>
+              <span>Decryption</span>
+              <div class="arrow-line"></div>
+            </div>
+            <div class="flow-node node-bob">
+              <div class="node-icon">👨‍💻</div>
+              <div class="node-label">Bob</div>
+              <div class="node-sub">Receiver</div>
+            </div>
+          </div>
+
+          <div style="text-align: center; margin-top: 1.5rem;">
+            <a href="#sec-problem" class="btn btn-primary" style="width: auto; padding: 0.6rem 1.8rem; display: inline-flex; text-decoration: none;">
+              Start the journey ↓
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 2 — BEFORE CRYPTOGRAPHY -->
+      <section id="sec-problem" class="notes-section">
+        <h2 class="section-title">First, what problem are we solving?</h2>
+        <p class="section-text">
+          Imagine Alice wants to send a sensitive password to Bob across the Internet:
+        </p>
+
+        <div class="example-box">
+          <div class="example-header">Example Plaintext Email</div>
+          <pre class="example-body">Hello Bob,
+The meeting password is QUANTUM123.</pre>
+        </div>
+
+        <div class="flow-container visual-box">
+          <div class="flow-node">
+            <div class="node-icon">👩‍💻</div>
+            <div>Alice</div>
+          </div>
+          <div class="flow-arrow">
+            <div class="arrow-text" style="color: var(--accent-rose);">Unencrypted Plaintext</div>
+            <div class="arrow-line"></div>
+          </div>
+          <div class="flow-node node-danger">
+            <div class="node-icon">👁</div>
+            <div>Attacker / ISP</div>
+            <div class="node-sub" style="color: var(--accent-rose);">Packet Intercepted</div>
+          </div>
+          <div class="flow-arrow">
+            <div class="arrow-line"></div>
+          </div>
+          <div class="flow-node">
+            <div class="node-icon">👨‍💻</div>
+            <div>Bob</div>
+          </div>
+        </div>
+
+        <div class="callout callout-danger">
+          <div class="callout-title">❌ No Confidentiality</div>
+          <p>
+            <strong>Plaintext</strong> means information is sent in readable, unencrypted form. Anyone inspecting network traffic can read the message word for word.
+          </p>
+        </div>
+      </section>
+
+      <!-- SECTION 3 — THREE SECURITY LEVELS OVERVIEW -->
+      <section id="sec-levels" class="notes-section">
+        <h2 class="section-title">QuMail's 3 Security Levels Overview</h2>
+        <div class="overview-grid">
+          <div class="level-card" onclick="document.getElementById('sec-level1').scrollIntoView({behavior: 'smooth'})">
+            <span class="badge badge-level-1">Level 1</span>
+            <h3>Plaintext Transmission</h3>
+            <ul class="card-list">
+              <li><strong>What it does:</strong> Transmits raw readable message without payload encryption.</li>
+              <li><strong>What travels:</strong> Cleartext JSON payload + Dilithium digital signature.</li>
+              <li><strong>Attacker sees:</strong> Full readable email body.</li>
+              <li><strong>Bob receives:</strong> Direct readable message.</li>
+              <li><strong>Purpose:</strong> Baseline demonstration of insecure transmission.</li>
+            </ul>
+          </div>
+          <div class="level-card" onclick="document.getElementById('sec-kyber').scrollIntoView({behavior: 'smooth'})">
+            <span class="badge badge-level-2">Level 2</span>
+            <h3>Kyber-1024 KEM + AES-256-GCM</h3>
+            <ul class="card-list">
+              <li><strong>What it does:</strong> Establishes post-quantum shared secret via Kyber KEM and encrypts body via AES-GCM.</li>
+              <li><strong>What travels:</strong> Kyber ciphertext + AES ciphertext + Nonce + Signature.</li>
+              <li><strong>Attacker sees:</strong> Scrambled hex ciphertexts (no plaintext exposed).</li>
+              <li><strong>Bob receives:</strong> Decapsulates shared secret to decrypt email.</li>
+              <li><strong>Purpose:</strong> Complete Post-Quantum Secure Email Flow.</li>
+            </ul>
+          </div>
+          <div class="level-card" onclick="document.getElementById('sec-otp').scrollIntoView({behavior: 'smooth'})">
+            <span class="badge badge-level-3">Level 3</span>
+            <h3>Quantum One-Time Pad (OTP)</h3>
+            <ul class="card-list">
+              <li><strong>What it does:</strong> Encrypts payload byte-by-byte using bitwise XOR with single-use key.</li>
+              <li><strong>What travels:</strong> OTP ciphertext (+ debug key in demo mode).</li>
+              <li><strong>Attacker sees:</strong> Random byte sequence.</li>
+              <li><strong>Bob receives:</strong> Re-applies XOR key to recover original bytes.</li>
+              <li><strong>Purpose:</strong> Mathematical perfect secrecy simulation.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 4 — LEVEL 1 FULL DIAGRAM -->
+      <section id="sec-level1" class="notes-section">
+        <h2 class="section-title">Level 1 — Plaintext Transmission Flow</h2>
+        <div class="visual-box">
+          <div class="flow-container">
+            <div class="flow-node">
+              <div class="node-icon">👩‍💻</div>
+              <strong>ALICE</strong>
+              <div class="node-sub">"Hello Bob"</div>
+            </div>
+            <div class="flow-arrow">
+              <div class="arrow-text">Raw JSON</div>
+              <div class="arrow-line"></div>
+            </div>
+            <div class="flow-node node-danger">
+              <div class="node-icon">👁</div>
+              <strong>NETWORK / WIRE LOG</strong>
+              <div class="node-sub" style="color: var(--accent-rose);">Packet visible in plaintext</div>
+            </div>
+            <div class="flow-arrow">
+              <div class="arrow-line"></div>
+            </div>
+            <div class="flow-node">
+              <div class="node-icon">👨‍💻</div>
+              <strong>BOB</strong>
+              <div class="node-sub">"Hello Bob"</div>
+            </div>
+          </div>
+
+          <div style="margin-top: 1rem;">
+            <div class="payload-inspector-title">Level 1 On-The-Wire JSON Packet:</div>
+            <pre class="raw-code">{
+  "security_level": 1,
+  "body": "Hello Bob",
+  "sender_pk": "dilithium_pk_a8f92...",
+  "signature": "dilithium_sig_92c1f..."
+}</pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 5 — WHY LEVEL 2 EXISTS -->
+      <section id="sec-why-level2" class="notes-section">
+        <h2 class="section-title">Why Level 2 Exists — Plaintext to Ciphertext</h2>
+        <div class="transformation-box">
+          <div class="transform-step">
+            <div class="step-label">Plaintext</div>
+            <div class="step-val">"Hello Bob"</div>
+          </div>
+          <div class="transform-arrow">➔ 🔒 AES-256-GCM ➔</div>
+          <div class="transform-step">
+            <div class="step-label">Ciphertext</div>
+            <div class="step-val" style="color: var(--accent-cyan); font-family: monospace;">8f92ab71c4e920d3...</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 6 — AES-256-GCM -->
+      <section id="sec-aes" class="notes-section">
+        <h2 class="section-title">AES-256-GCM — The Symmetric Lock</h2>
+        <div class="interactive-machine">
+          <div class="machine-title">Interactive AES-256-GCM Machine</div>
+          <div class="machine-grid">
+            <div class="machine-col">
+              <label>1. Plaintext Input</label>
+              <input type="text" id="aes-input-text" class="form-control" value="Top Secret Operational Briefing">
+              <label style="margin-top: 0.5rem;">2. Secret AES Key (256-bit)</label>
+              <input type="text" id="aes-input-key" class="form-control" value="KEY_32_BYTES_SHA256_DERIVED_ABC123" readonly>
+              <label style="margin-top: 0.5rem;">3. Nonce (12 Bytes)</label>
+              <input type="text" id="aes-input-nonce" class="form-control" value="7f92a18b3c4d5e6f7a8b9c0d" readonly>
+            </div>
+            <div class="machine-center">
+              <button class="btn btn-primary" onclick="runAesMachineDemo()">⚡ Encrypt with AES-GCM</button>
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Symmetric Encryption Engine</div>
+            </div>
+            <div class="machine-col">
+              <label>AES Ciphertext Output (Hex)</label>
+              <div id="aes-output-ciphertext" class="raw-code" style="min-height: 80px; font-size: 0.8rem; word-break: break-all;">
+                8f92ab71c4e920d3f82a19b...
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 7 — KYBER EXPLAINED VERY CAREFULLY -->
+      <section id="sec-kyber" class="notes-section">
+        <h2 class="section-title">Kyber — Establishing a Shared Secret Without Sending the Secret</h2>
+        <div class="kyber-steps-container">
+          <div class="step-card">
+            <div class="step-num">STEP 1</div>
+            <h4>Bob Generates Key Pair</h4>
+            <p>Bob creates a <strong>Public Key 🔓</strong> and a <strong>Private Key 🔑</strong>.</p>
+            <div class="vault-box">🔒 Bob's Private Vault: <code>kyber_sk_8f...</code> (Stays with Bob)</div>
+          </div>
+          <div class="step-card">
+            <div class="step-num">STEP 2</div>
+            <h4>Bob Shares Public Key Only</h4>
+            <p>Bob sends ONLY Public Key 🔓 to Alice across the network.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-num">STEP 3</div>
+            <h4>Alice Encapsulates</h4>
+            <p>Alice generates Shared Secret (ABC123) and Kyber Ciphertext.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-num">STEP 4</div>
+            <h4>Alice Transmits Kyber Ciphertext</h4>
+            <p>Alice sends ONLY Kyber Ciphertext across network to Bob.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-num">STEP 5</div>
+            <h4>Bob Decapsulates</h4>
+            <p>Bob derives Shared Secret (ABC123) using his Private Key 🔑.</p>
+          </div>
+          <div class="step-card" style="border-color: var(--accent-emerald);">
+            <div class="step-num" style="background: var(--accent-emerald);">STEP 6</div>
+            <h4>Both Hold Matching Secret</h4>
+            <div style="font-weight: bold; color: var(--accent-emerald);">Alice: 🔑 ABC123 = Bob: 🔑 ABC123</div>
+          </div>
+        </div>
+        <div class="highlight-banner">
+          🚨 THE SHARED SECRET ITSELF NEVER TRAVELED THROUGH THE NETWORK FROM ALICE TO BOB.
+        </div>
+      </section>
+
+      <!-- SECTION 8 — KYBER PATH VISUALIZER -->
+      <section id="sec-kyber-visualizer" class="notes-section">
+        <h2 class="section-title">Interactive Kyber Path Visualizer</h2>
+        <div class="visualizer-box">
+          <div class="viz-controls">
+            <button class="btn btn-secondary" style="width: auto;" onclick="prevKyberStep()">⏮ Previous</button>
+            <span id="kyber-step-indicator" style="font-weight: 700; color: var(--accent-blue);">Step 1 of 6: Key Generation</span>
+            <button class="btn btn-primary" style="width: auto;" onclick="nextKyberStep()">Next ⏭</button>
+            <button class="btn btn-secondary" style="width: auto;" onclick="resetKyberStep()">🔄 Replay</button>
+          </div>
+          <div class="viz-stage" id="kyber-viz-stage">
+            <div class="flow-node" id="node-viz-alice">
+              <div class="node-icon">👩‍💻</div>
+              <strong>ALICE</strong>
+              <div id="viz-alice-state" class="node-sub">Idle</div>
+            </div>
+            <div class="flow-arrow">
+              <div id="viz-packet-dot" class="animated-packet-dot" style="display: none;"></div>
+              <div id="viz-link-label" class="arrow-text">Network Wire</div>
+              <div class="arrow-line"></div>
+            </div>
+            <div class="flow-node" id="node-viz-bob">
+              <div class="node-icon">👨‍💻</div>
+              <strong>BOB</strong>
+              <div id="viz-bob-state" class="node-sub">Idle</div>
+            </div>
+          </div>
+          <div class="viz-description" id="kyber-step-desc">
+            Click 'Next' to start the Kyber Key Encapsulation Mechanism interactive walkthrough.
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 9 — LEVEL 2 COMPLETE FLOW -->
+      <section id="sec-level2-flow" class="notes-section">
+        <h2 class="section-title">Level 2 Complete Flow — Kyber KEM + AES-256-GCM</h2>
+        <div class="visual-box">
+          <div class="architecture-flow">
+            <div class="arch-box"><strong>1. Kyber KEM</strong><p>Encapsulate ➔ Shared Secret</p></div>
+            <div class="arch-arrow">➔</div>
+            <div class="arch-box"><strong>2. Key Derivation</strong><p>SHA-256 ➔ AES Key</p></div>
+            <div class="arch-arrow">➔</div>
+            <div class="arch-box"><strong>3. AES Encrypt</strong><p>Plaintext ➔ AES Ciphertext</p></div>
+            <div class="arch-arrow">➔</div>
+            <div class="arch-box"><strong>4. Sign Payload</strong><p>Dilithium Sign</p></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 10 — WHAT IS A NONCE? -->
+      <section id="sec-nonce" class="notes-section">
+        <h2 class="section-title">Nonce — A Number Used Once</h2>
+        <div class="knowledge-grid">
+          <div class="info-card">
+            <strong>✅ VALID (Unique Nonce Per Key)</strong>
+            <p>Message 1: Key A + Nonce <code>N001</code></p>
+            <p>Message 2: Key A + Nonce <code>N002</code></p>
+          </div>
+          <div class="info-card info-card-danger">
+            <strong>❌ DANGEROUS (Reused Nonce)</strong>
+            <p>Message 1: Key A + Nonce <code>N001</code></p>
+            <p>Message 2: Key A + Nonce <code>N001</code></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 11 — AUTHENTICATION TAG -->
+      <section id="sec-authtag" class="notes-section">
+        <h2 class="section-title">Authentication Tag — Has Ciphertext Been Tampered With?</h2>
+        <div class="visual-box">
+          <div class="tamper-demo">
+            <div class="tamper-col"><strong>Original Ciphertext:</strong> <code>8f92ab71c4e9...</code></div>
+            <div class="tamper-col"><strong>Modified Ciphertext:</strong> <code style="color: var(--accent-rose);">8f92ab71c4e8...</code></div>
+            <div class="tamper-col"><strong>Bob's Check:</strong> <span class="badge badge-level-1" style="color: var(--accent-rose);">❌ Tag Verification Failed</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 12 — DILITHIUM / DIGITAL SIGNATURES -->
+      <section id="sec-dilithium" class="notes-section">
+        <h2 class="section-title">Dilithium — Proving Who Signed the Message</h2>
+        <div class="sim-tag">SIMULATED IN THIS DEMO (HMAC-SHA256)</div>
+        <div class="comparison-dual" style="margin-top: 1rem;">
+          <div class="dual-col">
+            <h4>🔒 ENCRYPTION</h4>
+            <p>Confidentiality ("Can someone read this?")</p>
+          </div>
+          <div class="dual-col">
+            <h4>✍ DIGITAL SIGNATURE</h4>
+            <p>Authenticity & Integrity ("Who sent this?")</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 13 — LEVEL 3 OTP & XOR -->
+      <section id="sec-otp" class="notes-section">
+        <h2 class="section-title">Level 3 — Quantum One-Time Pad (OTP)</h2>
+        <div class="visual-box">
+          <div class="xor-grid">
+            <div class="xor-row"><span>Plaintext byte ('H'):</span> <code>01001000</code></div>
+            <div class="xor-row"><span>XOR (⊕) OTP Key byte:</span> <code>10110101</code></div>
+            <div class="xor-row" style="font-weight: 700; color: var(--accent-cyan);"><span>= Ciphertext byte:</span> <code>11111101</code></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 14 — ALL THREE LEVELS SIDE BY SIDE -->
+      <section id="sec-matrix" class="notes-section">
+        <h2 class="section-title">All 3 Security Levels Side-by-Side Comparison</h2>
+        <div style="overflow-x: auto;">
+          <table class="wire-log-table">
+            <thead>
+              <tr>
+                <th>Feature / Level</th>
+                <th>Level 1</th>
+                <th>Level 2</th>
+                <th>Level 3</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Payload Encryption</strong></td><td>None</td><td>AES-256-GCM</td><td>OTP (XOR)</td></tr>
+              <tr><td><strong>Key Establishment</strong></td><td>N/A</td><td>Kyber KEM</td><td>Single-Use Key</td></tr>
+              <tr><td><strong>Attacker Sees</strong></td><td>Cleartext</td><td>Kyber CT + AES CT</td><td>OTP Ciphertext</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SECTION 15 — INTERACTIVE NETWORK / ATTACKER VIEW -->
+      <section id="sec-network-demo" class="notes-section">
+        <h2 class="section-title">Interactive Network & Attacker Inspector</h2>
+        <div class="visualizer-box">
+          <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+            <button class="btn-switch active" id="btn-net-l1" onclick="selectNetworkDemoLevel(1)">Level 1</button>
+            <button class="btn-switch" id="btn-net-l2" onclick="selectNetworkDemoLevel(2)">Level 2</button>
+            <button class="btn-switch" id="btn-net-l3" onclick="selectNetworkDemoLevel(3)">Level 3</button>
+          </div>
+          <div id="network-demo-output" class="raw-code" style="font-size: 0.85rem; padding: 1rem;"></div>
+        </div>
+      </section>
+
+      <!-- SECTION 16 — PACKET ANATOMY -->
+      <section id="sec-anatomy" class="notes-section">
+        <h2 class="section-title">Interactive Packet Anatomy Inspector</h2>
+        <div class="anatomy-container">
+          <div class="anatomy-tabs">
+            <button class="btn-switch active" id="btn-anatomy-demo" onclick="switchAnatomyTab('demo')">Example Packet Schema</button>
+            <button class="btn-switch" id="btn-anatomy-real" onclick="switchAnatomyTab('real')">Live Wire Log Packet</button>
+          </div>
+          <div class="anatomy-grid">
+            <div class="raw-code anatomy-code" id="anatomy-json-display"></div>
+            <div class="anatomy-explanation" id="anatomy-explanation-box">
+              <div style="font-weight: 700; color: var(--accent-blue); margin-bottom: 0.5rem;">Property Inspector</div>
+              <p style="color: var(--text-muted); font-size: 0.85rem;">Click any field on the left JSON snippet to inspect its description.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 17 — CRYPTOGRAPHY GLOSSARY -->
+      <section id="sec-glossary" class="notes-section">
+        <h2 class="section-title">QuMail Cryptography Dictionary</h2>
+        <div class="form-group" style="max-width: 400px; margin-bottom: 1rem;">
+          <input type="text" id="glossary-search" class="form-control" placeholder="🔍 Search terms (e.g. Nonce, Kyber, Ciphertext)..." oninput="filterGlossary()">
+        </div>
+        <div class="glossary-grid" id="glossary-container"></div>
+      </section>
+
+      <!-- SECTION 18 — WHAT IS SECRET? TABLE -->
+      <section id="sec-secrets" class="notes-section">
+        <h2 class="section-title">What Is Secret vs What Is Public?</h2>
+        <div style="overflow-x: auto;">
+          <table class="wire-log-table">
+            <thead>
+              <tr>
+                <th>Cryptographic Item</th>
+                <th>Is it Secret?</th>
+                <th>Travels Over Network?</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Public Key</strong></td><td>❌ NO</td><td>YES</td></tr>
+              <tr><td><strong>Private Key</strong></td><td>✅ YES</td><td>NO</td></tr>
+              <tr><td><strong>Kyber Ciphertext</strong></td><td>❌ NO</td><td>YES</td></tr>
+              <tr><td><strong>Shared Secret</strong></td><td>✅ YES</td><td>NO</td></tr>
+              <tr><td><strong>AES Secret Key</strong></td><td>✅ YES</td><td>NO</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SECTION 19 — NETWORK HIGHWAY -->
+      <section id="sec-highway" class="notes-section">
+        <h2 class="section-title">What Actually Travels Across the Highway?</h2>
+        <div class="highway-container">
+          <div class="highway-vault">
+            <strong>👩‍💻 ALICE'S VAULT</strong>
+            <ul class="vault-list"><li>🔑 Shared Secret</li><li>🔑 Private Key</li></ul>
+          </div>
+          <div class="highway-road">
+            <div class="road-title">🌐 NETWORK HIGHWAY</div>
+            <div class="road-packets">
+              <span class="badge badge-level-2">Kyber Ciphertext</span>
+              <span class="badge badge-level-2">AES Ciphertext</span>
+              <span class="badge badge-level-2">Nonce</span>
+            </div>
+          </div>
+          <div class="highway-vault">
+            <strong>👨‍💻 BOB'S VAULT</strong>
+            <ul class="vault-list"><li>🔑 Bob Private Key</li><li>🔑 Shared Secret</li></ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 20 — COMPLETE STORY MODE PLAYER -->
+      <section id="sec-story" class="notes-section">
+        <h2 class="section-title">Complete Automated Story Mode Player</h2>
+        <div class="story-player-box">
+          <div class="story-controls">
+            <button class="btn btn-primary" style="width: auto;" id="btn-story-play" onclick="toggleStoryPlay()">▶ Play Story</button>
+            <button class="btn btn-secondary" style="width: auto;" onclick="prevStoryStep()">⏮ Prev</button>
+            <button class="btn btn-secondary" style="width: auto;" onclick="nextStoryStep()">Next ⏭</button>
+            <select id="story-speed-select" class="form-control" style="width: auto; display: inline-block; padding: 0.2rem 0.5rem;" onchange="changeStorySpeed()">
+              <option value="0.5">0.5x</option>
+              <option value="1" selected>1.0x</option>
+              <option value="1.5">1.5x</option>
+            </select>
+          </div>
+          <div class="story-status-bar">
+            <span id="story-step-num" style="font-weight: 700; color: var(--accent-blue);">Step 1 / 22</span>
+            <div id="story-step-title" style="font-weight: 600; margin-top: 0.25rem;">Alice Composes Message</div>
+          </div>
+          <div id="story-animation-stage" class="story-stage">
+            <div class="story-message-box" id="story-msg-box">"Top Secret Meeting at 0900"</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 21 — REAL VS SIMULATED CRYPTOGRAPHY -->
+      <section id="sec-real-vs-sim" class="notes-section">
+        <h2 class="section-title">What Is Real and What Is Simulated in QuMail?</h2>
+        <div class="real-sim-grid">
+          <div class="info-card">
+            <h4 style="color: var(--accent-emerald);">✅ REAL IMPLEMENTATIONS</h4>
+            <p>AES-256-GCM, Fernet Storage, DRF API, SQLite</p>
+          </div>
+          <div class="info-card info-card-danger">
+            <h4 style="color: var(--accent-amber);">⚠️ SIMULATED DEMO COMPONENTS</h4>
+            <p>Kyber KEM simulation, Dilithium HMAC signatures, OTP XOR single-use key</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 22 — UNDER THE HOOD -->
+      <section id="sec-under-hood" class="notes-section">
+        <h2 class="section-title">Under The Hood — Standardized ML-KEM & ML-DSA</h2>
+        <div class="visual-box">
+          <pre class="raw-code">(pk, sk) = KeyGen()
+(ct, ss_Alice) = Encaps(pk_Bob)
+ss_Bob = Decaps(sk_Bob, ct)</pre>
+        </div>
+      </section>
+
+      <!-- SECTION 23 — QUICK QUIZ -->
+      <section id="sec-quiz" class="notes-section">
+        <h2 class="section-title">QuMail Knowledge Quiz</h2>
+        <div class="quiz-container" id="quiz-container"></div>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
