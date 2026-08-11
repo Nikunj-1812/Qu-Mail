@@ -1,3 +1,4 @@
+import json
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
 from accounts.models import UserKeypair
@@ -6,6 +7,7 @@ from network_sim.models import InterceptedPacket
 from crypto_core import kyber, dilithium, key_storage, envelope
 
 User = get_user_model()
+
 
 DEMO_USERS = [
     {"username": "alice_demo", "email": "alice@qumail.test", "role": "Sender in demo"},
@@ -68,9 +70,13 @@ class Command(BaseCommand):
             DEFAULT_PASSWORD,
             alice.keypair.salt
         )
+        if isinstance(alice_sk_data, str):
+            alice_sk_data = json.loads(alice_sk_data)
         alice_dilithium_sk = alice_sk_data["dilithium_private_key"]
+
         alice_dilithium_pk = alice.keypair.dilithium_public_key
         bob_kyber_pk = bob.keypair.kyber_public_key
+
 
         sample_emails = [
             {

@@ -21,11 +21,14 @@ class ComposeEmailView(APIView):
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        recipient = serializer.validated_data["recipient_username"]
-        subject = serializer.validated_data["subject"]
-        body = serializer.validated_data["body"]
-        sec_level = serializer.validated_data["security_level"]
-        passphrase = serializer.validated_data.get("passphrase", "Demo@1234")
+        data = serializer.validated_data
+        assert isinstance(data, dict)
+        recipient = data["recipient_username"]
+        subject = data["subject"]
+        body = data["body"]
+        sec_level = data["security_level"]
+        passphrase = data.get("passphrase", "Demo@1234")
+
 
         sender = request.user
 

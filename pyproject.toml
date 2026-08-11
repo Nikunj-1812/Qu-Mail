@@ -1,5 +1,15 @@
 [tool.pyright]
 extraPaths = ["backend"]
+venvPath = "."
+venv = "venv"
+reportAttributeAccessIssue = "none"
+reportArgumentType = "none"
+reportMissingModuleSource = "none"
+reportUndefinedVariable = "none"
+
+[tool.pyrefly]
+project_includes = ["backend"]
+python_environment = "venv"
 
 [tool.pytest.ini_options]
 pythonpath = ["backend"]

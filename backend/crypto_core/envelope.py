@@ -63,7 +63,7 @@ def create_envelope(
         raise ValueError(f"Invalid security level: {security_level}")
 
 
-def decrypt_envelope(envelope: dict, recipient_kyber_sk: str = None) -> str:
+def decrypt_envelope(envelope: dict, recipient_kyber_sk: str | None = None) -> str:
     """
     Parses and decrypts an envelope payload back to plaintext.
     """
@@ -77,10 +77,14 @@ def decrypt_envelope(envelope: dict, recipient_kyber_sk: str = None) -> str:
         aes_ct = envelope.get("aes_ciphertext")
         nonce = envelope.get("nonce")
         
+        if not recipient_kyber_sk or not kyber_ct or not aes_ct or not nonce:
+            raise ValueError("Missing required keys or ciphertexts for Level 2 decryption.")
+
         shared_secret = kyber.decapsulate(recipient_kyber_sk, kyber_ct)
         aes_key = aes_cipher.derive_aes_key(shared_secret)
         plaintext = aes_cipher.decrypt_body(aes_key, aes_ct, nonce)
         return plaintext
+
 
     elif sec_level == 3:
         otp_ct_bytes = bytes.fromhex(envelope.get("otp_ciphertext", ""))
