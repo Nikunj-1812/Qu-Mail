@@ -152,8 +152,17 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # CORS Configuration
 from corsheaders.defaults import default_headers
 
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOW_CREDENTIALS = True
+# Read CORS origins from env (comma-separated) to avoid allowing all origins in prod.
+CORS_ALLOWED_ORIGINS = []
+_cors_origins = os.environ.get("CORS_ALLOWED_ORIGINS", "")
+if _cors_origins:
+    CORS_ALLOWED_ORIGINS = [o.strip() for o in _cors_origins.split(",") if o.strip()]
+    CORS_ALLOW_ALL_ORIGINS = False
+else:
+    CORS_ALLOW_ALL_ORIGINS = os.environ.get("CORS_ALLOW_ALL_ORIGINS", "False").lower() in ("true", "1", "yes")
+
+CORS_ALLOW_CREDENTIALS = os.environ.get("CORS_ALLOW_CREDENTIALS", "True").lower() in ("true", "1", "yes")
+
 CORS_ALLOW_HEADERS = list(default_headers) + [
     "x-passphrase",
 ]
