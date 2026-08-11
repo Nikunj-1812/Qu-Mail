@@ -4,6 +4,11 @@ export const getApiBaseUrl = (): string => {
   if (process.env.NEXT_PUBLIC_API_URL) {
     return process.env.NEXT_PUBLIC_API_URL;
   }
+  // In production builds (when NEXT_PUBLIC_API_URL is not set), default
+  // to the deployed backend URL so the frontend build can succeed.
+  if (process.env.NODE_ENV === 'production') {
+    return 'https://qu-mail.onrender.com';
+  }
   if (typeof window !== 'undefined') {
     return `${window.location.protocol}//${window.location.hostname}:8000`;
   }
